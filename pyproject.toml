@@ -1,0 +1,15 @@
+[project]
+name = "awsleaks"
+version = "1.0.0"
+requires-python = ">=3.10"
+dependencies = [
+    "boto3",
+    "requests",
+]
+
+[project.scripts]
+awsleaks = "awsleaks.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
