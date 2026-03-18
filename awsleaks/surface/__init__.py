@@ -15,6 +15,7 @@ from awsleaks.surface.amis import AMICheck
 from awsleaks.surface.ecr import ECRCheck
 from awsleaks.surface.sqs import SQSCheck
 from awsleaks.surface.sns import SNSCheck
+from awsleaks.surface.ssm_documents import SSMDocumentCheck
 
 GLOBAL_CHECKS = {"s3"}
 
@@ -36,4 +37,5 @@ ALL_CHECKS = {
     "ecr": ECRCheck,
     "sqs": SQSCheck,
     "sns": SNSCheck,
+    "ssm-documents": SSMDocumentCheck,
 }

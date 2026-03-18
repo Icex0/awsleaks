@@ -15,6 +15,9 @@ from awsleaks.collectors.appsync import AppSyncCollector
 from awsleaks.collectors.batch import BatchCollector
 from awsleaks.collectors.amplify import AmplifyCollector
 from awsleaks.collectors.s3 import S3Collector
+from awsleaks.collectors.ssm_documents import SSMDocumentCollector
+from awsleaks.collectors.emr import EMRCollector
+from awsleaks.collectors.appconfig import AppConfigCollector
 
 GLOBAL_COLLECTORS = {"s3"}
 
@@ -30,10 +33,13 @@ ALL_COLLECTORS = {
     "cloudformation": CloudFormationCollector,
     "beanstalk": BeanstalkCollector,
     "sagemaker": SageMakerCollector,
-    "ssm": SSMCollector,
+    "ssm-parameters": SSMCollector,
     "apigateway": APIGatewayCollector,
     "appsync": AppSyncCollector,
     "batch": BatchCollector,
     "amplify": AmplifyCollector,
     "s3": S3Collector,
+    "ssm-documents": SSMDocumentCollector,
+    "emr": EMRCollector,
+    "appconfig": AppConfigCollector,
 }

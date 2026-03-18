@@ -15,6 +15,8 @@ class SSMCollector(BaseCollector):
             for param in page.get("Parameters", []):
                 name = param["Name"]
                 param_type = param.get("Type", "")
+                if param_type == "SecureString":
+                    continue
                 try:
                     result = self._collect_parameter(client, name, param_type)
                     if result:
@@ -23,7 +25,7 @@ class SSMCollector(BaseCollector):
                     out.error(f"SSM {name}: {e}")
 
     def _collect_parameter(self, client, name, param_type):
-        response = client.get_parameter(Name=name, WithDecryption=True)
+        response = client.get_parameter(Name=name)
         param = response["Parameter"]
 
         output = {

@@ -14,7 +14,7 @@ uv tool install --force .
 
 Downloads code/configs from AWS services and scans with [BetterLeaks](https://github.com/betterleaks/betterleaks).
 
-**Supported services (17):**
+**Supported services (20):**
 
 - Lambda (function code)
 - CodeCommit (repository contents)
@@ -27,12 +27,15 @@ Downloads code/configs from AWS services and scans with [BetterLeaks](https://gi
 - CloudFormation (stack templates)
 - Elastic Beanstalk (source bundles & environment configs)
 - SageMaker (notebook configs & lifecycle scripts)
-- SSM Parameter Store (plaintext parameters)
+- SSM Parameters (plaintext parameters)
+- SSM Documents (automation scripts)
 - API Gateway (stage variables)
 - AppSync (resolver templates)
 - Batch (job definitions)
 - Amplify (app configs & branch settings)
 - S3 (public bucket contents)
+- EMR (bootstrap scripts, step configs, cluster configurations)
+- AppConfig (hosted configuration profiles)
 
 ```bash
 awsleaks secrets --profile my-profile
@@ -46,7 +49,7 @@ awsleaks secrets --profile my-profile --max-file-size 50   # skip S3 files over 
 
 Enumerates public-facing AWS resources and misconfigurations. Generates nmap scan files for discovered targets.
 
-**Supported checks (17):**
+**Supported checks (18):**
 
 - Security Groups (rules open to 0.0.0.0/0)
 - EC2 (public IPs with SG cross-reference for open ports)
@@ -65,6 +68,7 @@ Enumerates public-facing AWS resources and misconfigurations. Generates nmap sca
 - ECR (public repository policies)
 - SQS (public queue policies)
 - SNS (public topic policies)
+- SSM Documents (publicly shared automation scripts)
 
 ```bash
 awsleaks surface --profile my-profile

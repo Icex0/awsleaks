@@ -11,15 +11,17 @@ class GlueCollector(BaseCollector):
 
     def collect(self):
         client = self.session.client("glue")
-        paginator = client.get_paginator("get_jobs")
 
+        # Collect jobs
+        paginator = client.get_paginator("get_jobs")
         for page in paginator.paginate():
             for job in page.get("Jobs", []):
                 name = job["Name"]
                 try:
                     yield from self._collect_job(client, job)
                 except Exception as e:
-                    out.error(f"Glue {name}: {e}")
+                    out.error(f"Glue job {name}: {e}")
+
 
     def _collect_job(self, client, job):
         name = job["Name"]
