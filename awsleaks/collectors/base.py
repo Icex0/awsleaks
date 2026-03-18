@@ -1,17 +1,15 @@
 import os
 
 
-OUTPUT_DIR = "collected_code"
-
-
 class BaseCollector:
     """Base class for AWS service collectors."""
 
     service_name = "unknown"
 
-    def __init__(self, session):
+    def __init__(self, session, run_dir=None):
         self.session = session
-        self.output_dir = os.path.join(OUTPUT_DIR, self.service_name)
+        base = os.path.join(run_dir, "collected_code") if run_dir else "collected_code"
+        self.output_dir = os.path.join(base, self.service_name)
         os.makedirs(self.output_dir, exist_ok=True)
 
     def collect(self):

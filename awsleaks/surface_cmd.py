@@ -6,8 +6,6 @@ from awsleaks.auth import get_aws_session
 from awsleaks import output as out
 from awsleaks.surface import ALL_CHECKS, GLOBAL_CHECKS
 
-OUTPUT_DIR = "surface_results"
-
 
 def register(subparsers, add_auth_args):
     parser = subparsers.add_parser("surface", help="Discover internet-exposed AWS resources")
@@ -151,10 +149,12 @@ def run(args):
     out.banner(f"Total findings: {total_findings}")
 
     # Generate nmap targets and hosts file from all findings
-    _generate_scan_files(all_findings)
+    _generate_scan_files(all_findings, args.run_dir)
 
 
-def _generate_scan_files(findings):
+def _generate_scan_files(findings, run_dir):
+    output_dir = run_dir
+
     # Collect unique targets with their ports
     # target -> { ports: set, resources: list }
     targets = {}
@@ -172,16 +172,16 @@ def _generate_scan_files(findings):
     if not targets:
         return
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
 
     # hosts.txt — one target per line
-    hosts_path = os.path.join(OUTPUT_DIR, "hosts.txt")
+    hosts_path = os.path.join(output_dir, "hosts.txt")
     with open(hosts_path, "w") as f:
         for target in sorted(targets.keys()):
             f.write(f"{target}\n")
 
     # nmap_targets.txt — target:ports format for easy nmap use
-    nmap_path = os.path.join(OUTPUT_DIR, "nmap_targets.txt")
+    nmap_path = os.path.join(output_dir, "nmap_targets.txt")
     with open(nmap_path, "w") as f:
         for target in sorted(targets.keys()):
             ports = sorted(targets[target]["ports"], key=lambda x: int(x.split("-")[0]))
@@ -192,7 +192,7 @@ def _generate_scan_files(findings):
                 f.write(f"nmap -Pn -sV --open {target} -p {','.join(ports)}\n\n")
 
     # nmap_scan.sh — ready-to-run script
-    script_path = os.path.join(OUTPUT_DIR, "nmap_scan.sh")
+    script_path = os.path.join(output_dir, "nmap_scan.sh")
     # Filter to only targets with ports
     scannable = [(t, targets[t]) for t in sorted(targets.keys()) if targets[t]["ports"]]
     total = len(scannable)
@@ -210,7 +210,7 @@ def _generate_scan_files(findings):
             f.write(f"{cmd}\n\n")
     os.chmod(script_path, 0o755)
 
-    out.status(f"Scan files written to {OUTPUT_DIR}/")
+    out.status(f"Scan files written to {output_dir}/")
     print(f"    hosts.txt       — {len(targets)} target(s)")
     print(f"    nmap_targets.txt — nmap commands per target")
     print(f"    nmap_scan.sh    — run: ./{script_path}")

@@ -1,3 +1,5 @@
+import os
+
 import boto3
 
 from awsleaks.auth import get_aws_session
@@ -82,8 +84,8 @@ def _parse_regions(args, session):
 def _create_collector(collector_cls, session, args):
     from awsleaks.collectors.s3 import S3Collector
     if collector_cls is S3Collector:
-        return collector_cls(session, max_file_size_mb=args.max_file_size)
-    return collector_cls(session)
+        return collector_cls(session, run_dir=args.run_dir, max_file_size_mb=args.max_file_size)
+    return collector_cls(session, run_dir=args.run_dir)
 
 
 def run(args):
@@ -170,6 +172,8 @@ def run(args):
     # Phase 2: Scan everything
     out.banner("Phase 2: Scanning for secrets")
 
+    report_dir = os.path.join(args.run_dir, "betterleaks_reports")
+
     for key, items in collected_by_service.items():
         if not items:
             continue
@@ -178,6 +182,6 @@ def run(args):
 
         for name, path in items:
             try:
-                scan(path, name)
+                scan(path, name, report_dir=report_dir)
             except Exception as e:
                 out.error(f"Scan failed for {name}: {e}")

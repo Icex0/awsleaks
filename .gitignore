@@ -9,3 +9,4 @@
 /awsleaks/__pycache__
 /awsleaks/surface/__pycache__
 /surface_results
+/awsleaks_secrets_*

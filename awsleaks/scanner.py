@@ -5,12 +5,24 @@ import subprocess
 from awsleaks import output as out
 
 BL_SRC_DIR = "betterleaks_src"
-BL_BINARY = os.path.join(BL_SRC_DIR, "betterleaks")
-REPORT_DIR = "betterleaks_reports"
+BL_LOCAL_BINARY = os.path.join(BL_SRC_DIR, "betterleaks")
+BL_BINARY = None  # Set by build_betterleaks
 
 
 def build_betterleaks():
-    if os.path.exists(BL_BINARY):
+    global BL_BINARY
+
+    # Check if betterleaks is already on PATH (e.g. installed via brew)
+    from shutil import which
+    system_bl = which("betterleaks")
+    if system_bl:
+        BL_BINARY = system_bl
+        out.status(f"Using system BetterLeaks: {system_bl}")
+        return
+
+    # Check if we already built it locally
+    if os.path.exists(BL_LOCAL_BINARY):
+        BL_BINARY = BL_LOCAL_BINARY
         out.none("BetterLeaks binary exists, skipping build")
         return
 
@@ -20,12 +32,13 @@ def build_betterleaks():
     out.status("Building BetterLeaks")
     subprocess.run(["make", "build"], cwd=BL_SRC_DIR, check=True)
     out.status("BetterLeaks build complete")
+    BL_BINARY = BL_LOCAL_BINARY
 
 
-def scan(path, name):
+def scan(path, name, report_dir="betterleaks_reports"):
     """Run BetterLeaks on a directory and print any findings."""
-    os.makedirs(REPORT_DIR, exist_ok=True)
-    report_path = os.path.join(REPORT_DIR, f"{name}_betterleaks.json")
+    os.makedirs(report_dir, exist_ok=True)
+    report_path = os.path.join(report_dir, f"{name}_betterleaks.json")
     out.info(f"Scanning {name}")
 
     cmd = [
@@ -50,3 +63,4 @@ def scan(path, name):
     for leak in leaks:
         out.warn(f"[{leak.get('RuleID')}] {leak.get('File')}:{leak.get('StartLine')}")
         out.detail(f"SECRET: {leak.get('Secret')}")
+    print()

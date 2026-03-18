@@ -1,5 +1,6 @@
 import argparse
 import sys
+from datetime import datetime
 
 from awsleaks import secrets_cmd, surface_cmd
 
@@ -29,6 +30,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
+    args.run_dir = f"awsleaks_{args.command}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     args.func(args)
 
 

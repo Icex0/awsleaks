@@ -13,8 +13,8 @@ DEFAULT_MAX_FILE_SIZE_MB = 200
 class S3Collector(BaseCollector):
     service_name = "s3"
 
-    def __init__(self, session, max_file_size_mb=DEFAULT_MAX_FILE_SIZE_MB):
-        super().__init__(session)
+    def __init__(self, session, run_dir=None, max_file_size_mb=DEFAULT_MAX_FILE_SIZE_MB):
+        super().__init__(session, run_dir=run_dir)
         self.max_file_size = max_file_size_mb * 1024 * 1024
 
     def collect(self):
