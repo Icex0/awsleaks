@@ -1,6 +1,6 @@
 # awsleaks
 
-AWS security scanner — find hardcoded secrets and internet-exposed resources.
+AWS security scanner that finds hardcoded secrets and internet-exposed resources across all regions and 30+ AWS services.
 
 ## Install
 
@@ -14,7 +14,25 @@ uv tool install --force .
 
 Downloads code/configs from AWS services and scans with [BetterLeaks](https://github.com/betterleaks/betterleaks).
 
-**Supported services:** Lambda, CodeCommit, CodeBuild, CodePipeline, Glue, Step Functions, ECS, EC2 (user data & launch templates), CloudFormation, Elastic Beanstalk, SageMaker, SSM Parameter Store, API Gateway, AppSync, Batch, Amplify, S3 (public buckets)
+**Supported services (17):**
+
+- Lambda (function code)
+- CodeCommit (repository contents)
+- CodeBuild (project configs & environment variables)
+- CodePipeline (pipeline definitions)
+- Glue (job scripts)
+- Step Functions (state machine definitions)
+- ECS (task definitions & environment variables)
+- EC2 (user data & launch templates)
+- CloudFormation (stack templates)
+- Elastic Beanstalk (source bundles & environment configs)
+- SageMaker (notebook configs & lifecycle scripts)
+- SSM Parameter Store (plaintext parameters)
+- API Gateway (stage variables)
+- AppSync (resolver templates)
+- Batch (job definitions)
+- Amplify (app configs & branch settings)
+- S3 (public bucket contents)
 
 ```bash
 awsleaks secrets --profile my-profile
@@ -28,7 +46,25 @@ awsleaks secrets --profile my-profile --max-file-size 50   # skip S3 files over 
 
 Enumerates public-facing AWS resources and misconfigurations. Generates nmap scan files for discovered targets.
 
-**Checks:** Security Groups (0.0.0.0/0), EC2 (public IPs + SG cross-reference), ELB/ALB/NLB, RDS, Redshift, S3 (public buckets), API Gateway (REST + HTTP, resource policies), Lambda Function URLs (resource policies), OpenSearch (access policies + fine-grained access control), EKS (public API + CIDR restrictions), ECS (public IPs + SGs), EBS Snapshots (public sharing), RDS Snapshots (public sharing), AMIs (public images), ECR (public repository policies), SQS (public queue policies), SNS (public topic policies)
+**Supported checks (17):**
+
+- Security Groups (rules open to 0.0.0.0/0)
+- EC2 (public IPs with SG cross-reference for open ports)
+- ELB/ALB/NLB (internet-facing load balancers with listener ports)
+- RDS (PubliclyAccessible instances with SG cross-reference)
+- Redshift (PubliclyAccessible clusters with SG cross-reference)
+- S3 (public buckets via access block, policy, and ACL analysis)
+- API Gateway (REST + HTTP APIs with resource policy analysis)
+- Lambda Function URLs (with resource policy analysis)
+- OpenSearch (public endpoints with access policy and fine-grained access control)
+- EKS (public API endpoints with CIDR restrictions)
+- ECS (public IP services with SG cross-reference)
+- EBS Snapshots (publicly shared, encrypted vs unencrypted)
+- RDS Snapshots (publicly shared DB and cluster snapshots)
+- AMIs (publicly shared images, encrypted vs unencrypted)
+- ECR (public repository policies)
+- SQS (public queue policies)
+- SNS (public topic policies)
 
 ```bash
 awsleaks surface --profile my-profile
@@ -36,6 +72,10 @@ awsleaks surface --profile my-profile --checks ec2,security-groups,rds,s3
 awsleaks surface --profile my-profile --all-regions
 awsleaks surface --profile my-profile --regions eu-west-1,us-east-1
 ```
+
+## Permissions
+
+This tool only requires **read-only access**. The AWS managed policy `ReadOnlyAccess` covers all API calls used by both commands, but any custom policy with the relevant `Describe*`, `List*`, and `Get*` permissions will also work. No write permissions are needed.
 
 ## Authentication
 
