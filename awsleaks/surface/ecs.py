@@ -46,6 +46,7 @@ class ECSCheck(BaseCheck):
                     self.add_finding(
                         resource=f"{cluster_name}/{svc_name}",
                         detail=detail,
+                        severity="HIGH" if open_ports else "MEDIUM",
                         ports=open_ports if open_ports else None,
                     )
 

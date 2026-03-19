@@ -25,6 +25,7 @@ if _USE_COLOR and sys.platform == "win32":
         pass
 
 _RED = "\033[91m" if _USE_COLOR else ""
+_YELLOW = "\033[93m" if _USE_COLOR else ""
 _GREEN = "\033[92m" if _USE_COLOR else ""
 _CYAN = "\033[96m" if _USE_COLOR else ""
 _RESET = "\033[0m" if _USE_COLOR else ""
@@ -38,6 +39,11 @@ def info(msg):
 def warn(msg):
     """[!] message in red."""
     print(f"  {_RED}[!]{_RESET} {msg}")
+
+
+def caution(msg):
+    """[!] message in yellow/orange."""
+    print(f"  {_YELLOW}[!]{_RESET} {msg}")
 
 
 def none(msg):

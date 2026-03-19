@@ -4,6 +4,8 @@ from awsleaks.surface.base import BaseCheck
 class ELBCheck(BaseCheck):
     name = "elb"
 
+    note = "Internet-facing load balancers are expected for public services."
+
     def run(self):
         self._check_alb_nlb()
         self._check_classic()
@@ -35,6 +37,7 @@ class ELBCheck(BaseCheck):
                 self.add_finding(
                     resource=f"{name} ({lb_type})",
                     detail=f"Internet-facing | DNS: {dns} | Ports: {port_str}",
+                    severity="MEDIUM",
                     target=dns,
                     ports=ports,
                 )
@@ -57,6 +60,7 @@ class ELBCheck(BaseCheck):
             self.add_finding(
                 resource=f"{name} (classic)",
                 detail=f"Internet-facing | DNS: {dns} | Ports: {port_str}",
+                severity="MEDIUM",
                 target=dns,
                 ports=ports,
             )

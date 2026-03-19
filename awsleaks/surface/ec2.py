@@ -4,6 +4,8 @@ from awsleaks.surface.base import BaseCheck
 class EC2Check(BaseCheck):
     name = "ec2"
 
+    note = "Public IPs with open ports may be intentional (web servers, bastion hosts, etc.)"
+
     def run(self):
         client = self.session.client("ec2")
         paginator = client.get_paginator("describe_instances")
@@ -35,17 +37,17 @@ class EC2Check(BaseCheck):
                     open_ports = sorted(set(self._get_open_ports(client, sg_ids, sg_cache)),
                                         key=lambda x: (x != "ALL", int(x.split("-")[0]) if x != "ALL" else 0))
 
+                    if not open_ports:
+                        continue
+
                     resource = f"{instance_id} ({name_tag})" if name_tag else instance_id
-                    if open_ports:
-                        detail = f"EXPOSED | IP: {public_ip} | SGs: {', '.join(sg_ids)} | Ports: {', '.join(open_ports)}"
-                    else:
-                        detail = f"Public IP but SG blocks all inbound | IP: {public_ip} | SGs: {', '.join(sg_ids)}"
+                    detail = f"EXPOSED | IP: {public_ip} | SGs: {', '.join(sg_ids)} | Ports: {', '.join(open_ports)}"
 
                     self.add_finding(
                         resource=resource,
                         detail=detail,
                         target=public_ip,
-                        ports=open_ports if open_ports else None,
+                        ports=open_ports,
                     )
 
     def _get_open_ports(self, client, sg_ids, sg_cache):

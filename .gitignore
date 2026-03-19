@@ -1,5 +1,4 @@
 /betterleaks_reports
-/lambda_code
 /betterleaks_src
 /aws_secrets_checker/__pycache__
 /aws_secrets_checker/collectors/__pycache__
@@ -8,5 +7,6 @@
 /awsleaks/collectors/__pycache__
 /awsleaks/__pycache__
 /awsleaks/surface/__pycache__
-/surface_results
 /awsleaks_secrets_*
+/awsleaks_surface_*
+/nmap_output

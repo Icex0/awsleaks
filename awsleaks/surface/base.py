@@ -5,6 +5,7 @@ class BaseCheck:
     """Base class for surface exposure checks."""
 
     name = "unknown"
+    note = None
 
     def __init__(self, session):
         self.session = session
@@ -31,6 +32,13 @@ class BaseCheck:
             out.none("No exposed resources found")
             return
 
+        if self.note:
+            out.caution(self.note)
+            print()
+
         for f in self.findings:
-            out.warn(f['resource'])
+            if f.get("severity") == "MEDIUM":
+                out.caution(f['resource'])
+            else:
+                out.warn(f['resource'])
             out.detail(f['detail'])

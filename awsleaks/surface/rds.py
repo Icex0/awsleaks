@@ -32,6 +32,7 @@ class RDSCheck(BaseCheck):
                 self.add_finding(
                     resource=f"{identifier} ({engine})",
                     detail=detail,
+                    severity="HIGH" if exposed else "MEDIUM",
                     target=address,
                     ports=[str(port)] if exposed else None,
                 )

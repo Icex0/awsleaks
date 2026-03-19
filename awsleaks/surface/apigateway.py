@@ -5,6 +5,7 @@ from awsleaks.surface.base import BaseCheck
 
 class APIGatewayCheck(BaseCheck):
     name = "apigateway"
+    note = "API Gateway endpoints are designed to be public. Review resource policies for restrictions."
 
     def run(self):
         self._check_rest_apis()
@@ -18,6 +19,9 @@ class APIGatewayCheck(BaseCheck):
             api_id = api["id"]
             api_name = api.get("name", api_id)
             endpoint_type = api.get("endpointConfiguration", {}).get("types", [])
+
+            if "PRIVATE" in endpoint_type:
+                continue
 
             restrictions = self._get_restrictions(api)
 

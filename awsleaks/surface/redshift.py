@@ -31,6 +31,7 @@ class RedshiftCheck(BaseCheck):
                 self.add_finding(
                     resource=identifier,
                     detail=detail,
+                    severity="HIGH" if exposed else "MEDIUM",
                     target=address,
                     ports=[str(port)] if exposed else None,
                 )
