@@ -108,6 +108,11 @@ def run(args):
     if regions is None:
         return
 
+    if not args.all_regions:
+        region_str = ", ".join(regions)
+        out.status(f"Scanning region: {region_str}")
+        out.warn("Not scanning all regions. Resources in other regions will be missed. Use --all-regions to scan everything.")
+
     # Phase 1: Collect everything
     collected_by_service = {}
     total = 0
