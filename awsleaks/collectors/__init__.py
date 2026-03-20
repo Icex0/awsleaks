@@ -18,6 +18,8 @@ from awsleaks.collectors.s3 import S3Collector
 from awsleaks.collectors.ssm_documents import SSMDocumentCollector
 from awsleaks.collectors.emr import EMRCollector
 from awsleaks.collectors.appconfig import AppConfigCollector
+from awsleaks.collectors.apprunner import AppRunnerCollector
+from awsleaks.collectors.lightsail import LightsailCollector
 
 GLOBAL_COLLECTORS = {"s3"}
 
@@ -42,4 +44,6 @@ ALL_COLLECTORS = {
     "ssm-documents": SSMDocumentCollector,
     "emr": EMRCollector,
     "appconfig": AppConfigCollector,
+    "apprunner": AppRunnerCollector,
+    "lightsail": LightsailCollector,
 }

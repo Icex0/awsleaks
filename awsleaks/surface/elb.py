@@ -49,8 +49,6 @@ class ELBCheck(BaseCheck):
                 if reachable:
                     port_str = ", ".join(reachable)
                     detail = f"Internet-facing | DNS: {dns} | SGs: {', '.join(sg_ids)} | Ports: {port_str}"
-                    if blocked:
-                        detail += f" | SG-blocked: {', '.join(blocked)}"
                     self.add_finding(
                         resource=f"{name} ({lb_type})",
                         detail=detail,
@@ -93,8 +91,6 @@ class ELBCheck(BaseCheck):
             if reachable:
                 port_str = ", ".join(reachable)
                 detail = f"Internet-facing | DNS: {dns} | SGs: {', '.join(sg_ids)} | Ports: {port_str}"
-                if blocked:
-                    detail += f" | SG-blocked: {', '.join(blocked)}"
                 self.add_finding(
                     resource=f"{name} (classic)",
                     detail=detail,
