@@ -115,8 +115,8 @@ class S3Collector(BaseCollector):
         if profile:
             cmd.extend(["--profile", profile])
 
-        # Exclude files > 200MB by listing them first
-        out.status("Checking for files > 200MB to exclude...")
+        max_mb = self.max_file_size // (1024 * 1024)
+        out.status(f"Checking for files > {max_mb}MB to exclude...")
         paginator = client.get_paginator("list_objects_v2")
         excluded = 0
         for page in paginator.paginate(Bucket=bucket):
@@ -126,7 +126,7 @@ class S3Collector(BaseCollector):
                     excluded += 1
 
         if excluded:
-            out.status(f"Excluding {excluded} file(s) over 200MB")
+            out.status(f"Excluding {excluded} file(s) over {max_mb}MB")
 
         out.status(f"Syncing s3://{bucket} (using aws s3 sync with parallel transfers)...")
         result = subprocess.run(cmd)
