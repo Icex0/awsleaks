@@ -1,10 +1,20 @@
-# awsleaks
+# AWSleaks
+
+![awsleaks banner](images/awsleaks.png)
 
 AWS security scanner that finds hardcoded secrets and internet-exposed resources across all regions and 30+ AWS services.
+
+## Why AWSleaks?
+
+Many AWS security scanners generate thousands of findings without verifying whether resources are actually exposed — they ignore security groups, policies, ACLs, VPC configurations, and other controls that may already block exposure. They also lack automated secret verification, leaving you to manually triage false positives where keywords like "secret" are flagged with no actual credential present.
+
+AWSleaks takes a different approach: it validates exposure against configurations and uses [BetterLeaks](https://github.com/betterleaks/betterleaks) to verify secrets.
+
 
 ## Install
 
 ```bash
+# Run this from the project root directory
 uv tool install --force .
 ```
 
