@@ -12,7 +12,7 @@ def register(subparsers, add_auth_args):
     add_auth_args(parser)
     parser.add_argument(
         "--checks",
-        nargs="+",
+        nargs="*",
         default=None,
         help=f"Checks to run, space or comma separated (default: all). Available: {', '.join(ALL_CHECKS.keys())}",
     )
@@ -81,6 +81,9 @@ def run(args):
     session = get_aws_session(args)
 
     # Support both space and comma separated: --checks ec2,rds or --checks ec2 rds
+    if args.checks is not None and len(args.checks) == 0:
+        print(f"Available checks: {', '.join(ALL_CHECKS.keys())}")
+        return
     raw = args.checks or list(ALL_CHECKS.keys())
     checks = []
     for item in raw:

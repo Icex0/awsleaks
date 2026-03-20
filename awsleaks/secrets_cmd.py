@@ -13,7 +13,7 @@ def register(subparsers, add_auth_args):
     add_auth_args(parser)
     parser.add_argument(
         "--services",
-        nargs="+",
+        nargs="*",
         default=None,
         help=f"Services to scan, space or comma separated (default: all). Available: {', '.join(ALL_COLLECTORS.keys())}",
     )
@@ -94,6 +94,9 @@ def run(args):
     build_betterleaks()
 
     # Support both space and comma separated: --services lambda,glue or --services lambda glue
+    if args.services is not None and len(args.services) == 0:
+        print(f"Available services: {', '.join(ALL_COLLECTORS.keys())}")
+        return
     raw = args.services or list(ALL_COLLECTORS.keys())
     services = []
     for item in raw:
