@@ -24,9 +24,9 @@ class RedshiftCheck(BaseCheck):
                 exposed = self._sg_allows_port(ec2, sg_ids, port)
 
                 if exposed:
-                    detail = f"EXPOSED | Endpoint: {address} | SGs: {', '.join(sg_ids)} | Ports: {port}"
+                    detail = f"EXPOSED | Endpoint: {address}:{port} | SGs: {', '.join(sg_ids)}"
                 else:
-                    detail = f"PubliclyAccessible but SG blocks port | Endpoint: {address} | SGs: {', '.join(sg_ids)}"
+                    detail = f"PubliclyAccessible but SG blocks port {port} | Endpoint: {address}:{port} | SGs: {', '.join(sg_ids)}"
 
                 self.add_finding(
                     resource=identifier,
