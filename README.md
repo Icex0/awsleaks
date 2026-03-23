@@ -83,13 +83,14 @@ Enumerates public-facing AWS resources and misconfigurations. Generates nmap sca
 - SSM Documents (publicly shared automation scripts)
 - Amazon MQ (publicly accessible brokers with SG cross-reference for ActiveMQ, auth-only for RabbitMQ)
 - AWS Transfer Family (public SFTP/FTP/FTPS servers)
-- Route53 (DNS record collection with subdomain takeover detection via subjack)
+- Route53 (DNS record collection with takeover detection via [subjack](https://github.com/haccer/subjack) — checks CNAME, NS, A, and MX takeover). You should always verify results by checking [can-take-over-xyz](https://github.com/EdOverflow/can-i-take-over-xyz)
 
 ```bash
 awsleaks surface --profile my-profile
 awsleaks surface --profile my-profile --checks ec2,security-groups,rds,s3
 awsleaks surface --profile my-profile --all-regions
 awsleaks surface --profile my-profile --regions eu-west-1,us-east-1
+awsleaks surface --profile my-profile --subjack   # run subdomain takeover scan with subjack
 ```
 
 ## Permissions
@@ -132,6 +133,7 @@ awsleaks secrets --profile my-sso-profile
 | `--services` | (secrets) Services to scan, comma or space separated |
 | `--checks` | (surface) Checks to run, comma or space separated |
 | `--max-file-size` | (secrets) Max S3 file size in MB to download (default: 200) |
+| `--subjack` | (surface) Run subdomain takeover scan with subjack on Route53 domains |
 
 ## Output
 

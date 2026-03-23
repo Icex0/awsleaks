@@ -65,7 +65,7 @@ class Route53Check(BaseCheck):
 
         if not run_subjack:
             out.caution("Subdomain takeover scan skipped. Use --subjack to run automatically.")
-            print(f"    Or run manually: subjack -w {domains_path} -t 20 -ssl -a")
+            print(f"    Or run manually: subjack -w {domains_path} -t 20 -ssl -a -ns -ar -mail")
             return
 
         # Check for subjack
@@ -77,8 +77,9 @@ class Route53Check(BaseCheck):
             try:
                 result = subprocess.run(
                     [subjack_path, "-w", domains_path, "-t", "20",
-                     "-o", results_path, "-ssl", "-a"],
-                    capture_output=True, text=True, timeout=900,
+                     "-o", results_path, "-ssl", "-a",
+                     "-ns", "-ar", "-mail"],
+                    capture_output=True, text=True, timeout=1800,
                 )
                 if os.path.exists(results_path) and os.path.getsize(results_path) > 0:
                     out.warn(f"Subdomain takeover candidates found! See {results_path}")
@@ -88,10 +89,10 @@ class Route53Check(BaseCheck):
                 else:
                     out.none("No subdomain takeover candidates found")
             except subprocess.TimeoutExpired:
-                out.error("subjack timed out after 15 minutes")
+                out.error("subjack timed out after 30 minutes")
             except Exception as e:
                 out.error(f"subjack error: {e}")
         else:
             out.caution("subjack not installed. Install it for subdomain takeover detection:")
             print(f"    go install github.com/haccer/subjack@latest")
-            print(f"    Then run: subjack -w {domains_path} -t 20 -ssl -a")
+            print(f"    Then run: subjack -w {domains_path} -t 20 -ssl -a -ns -ar -mail")
