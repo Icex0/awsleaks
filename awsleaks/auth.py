@@ -16,7 +16,12 @@ def get_aws_session(args):
             region_name=args.region,
         )
     elif args.profile:
-        session = boto3.Session(profile_name=args.profile, region_name=args.region)
+        try:
+            session = boto3.Session(profile_name=args.profile, region_name=args.region)
+        except botocore.exceptions.ProfileNotFound:
+            out.error(f"AWS profile '{args.profile}' not found.")
+            print("    Run: aws configure --profile", args.profile)
+            sys.exit(1)
     else:
         session = boto3.Session(region_name=args.region)
 
