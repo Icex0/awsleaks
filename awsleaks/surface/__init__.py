@@ -18,8 +18,9 @@ from awsleaks.surface.sns import SNSCheck
 from awsleaks.surface.ssm_documents import SSMDocumentCheck
 from awsleaks.surface.mq import MQCheck
 from awsleaks.surface.transfer import TransferCheck
+from awsleaks.surface.route53 import Route53Check
 
-GLOBAL_CHECKS = {"s3"}
+GLOBAL_CHECKS = {"s3", "route53"}
 
 ALL_CHECKS = {
     "security-groups": SecurityGroupCheck,
@@ -42,4 +43,5 @@ ALL_CHECKS = {
     "ssm-documents": SSMDocumentCheck,
     "mq": MQCheck,
     "transfer": TransferCheck,
+    "route53": Route53Check,
 }

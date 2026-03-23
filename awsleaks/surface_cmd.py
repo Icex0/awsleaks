@@ -5,6 +5,7 @@ import boto3
 from awsleaks.auth import get_aws_session
 from awsleaks import output as out
 from awsleaks.surface import ALL_CHECKS, GLOBAL_CHECKS
+from awsleaks.surface.route53 import Route53Check
 
 
 def register(subparsers, add_auth_args):
@@ -26,6 +27,11 @@ def register(subparsers, add_auth_args):
         nargs="+",
         default=None,
         help="Specific regions to scan, space or comma separated (e.g. --regions eu-west-1,eu-west-2)",
+    )
+    parser.add_argument(
+        "--subjack",
+        action="store_true",
+        help="Run subdomain takeover scanning with subjack on Route53 domains",
     )
     parser.set_defaults(func=run)
 
@@ -106,6 +112,7 @@ def run(args):
 
     total_findings = 0
     all_findings = []
+    route53_check = None
 
     out.banner("Attack Surface Scan")
 
@@ -128,6 +135,9 @@ def run(args):
         check.print_findings()
         all_findings.extend(check.findings)
         total_findings += len(check.findings)
+
+        if isinstance(check, Route53Check):
+            route53_check = check
 
     # Run regional checks per region
     for region in regions:
@@ -156,6 +166,10 @@ def run(args):
             total_findings += len(check.findings)
 
     out.banner(f"Total findings: {total_findings}")
+
+    # Write Route53 domains and run subjack if available
+    if route53_check:
+        route53_check.write_domains(args.run_dir, run_subjack=args.subjack)
 
     # Generate nmap targets and hosts file from all findings
     _generate_scan_files(all_findings, args.run_dir)

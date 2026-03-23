@@ -61,7 +61,7 @@ awsleaks secrets --profile my-profile --max-file-size 50   # skip S3 files over 
 
 Enumerates public-facing AWS resources and misconfigurations. Generates nmap scan files for discovered targets.
 
-**Supported checks (20):**
+**Supported checks (21):**
 
 - Security Groups (rules open to 0.0.0.0/0)
 - EC2 (public IPs with SG cross-reference for open ports)
@@ -83,6 +83,7 @@ Enumerates public-facing AWS resources and misconfigurations. Generates nmap sca
 - SSM Documents (publicly shared automation scripts)
 - Amazon MQ (publicly accessible brokers with SG cross-reference for ActiveMQ, auth-only for RabbitMQ)
 - AWS Transfer Family (public SFTP/FTP/FTPS servers)
+- Route53 (DNS record collection with subdomain takeover detection via subjack)
 
 ```bash
 awsleaks surface --profile my-profile
@@ -136,9 +137,10 @@ awsleaks secrets --profile my-sso-profile
 
 ### Surface scan output
 
-- Generates `surface_results/hosts.txt` — unique target IPs/hostnames
-- Generates `surface_results/nmap_targets.txt` — nmap commands per target
-- Generates `surface_results/nmap_scan.sh` — ready-to-run scan script
+- Generates `hosts.txt` — unique target IPs/hostnames
+- Generates `nmap_targets.txt` — nmap commands per target
+- Generates `nmap_scan.sh` — ready-to-run scan script
+- Generates `route53_domains.txt` — DNS records for subdomain takeover analysis
 
 ### Secrets scan output
 
