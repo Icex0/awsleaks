@@ -223,6 +223,7 @@ class IMDSv1RoleCheck(BaseCheck):
                         (t["Value"] for t in instance.get("Tags", []) if t["Key"] == "Name"),
                         "",
                     )
+                    public_dns = instance.get("PublicDnsName", "")
                     profile = instance.get("IamInstanceProfile")
                     http_tokens = metadata_options.get("HttpTokens", "optional")
 
@@ -232,7 +233,8 @@ class IMDSv1RoleCheck(BaseCheck):
                     if instance_state != "running":
                         detail_parts.append(f"State: {instance_state.upper()}")
                     if is_public:
-                        detail_parts.append(f"PUBLIC | IP: {public_ip} | Ports: {', '.join(open_ports)}")
+                        dns_part = f" | DNS: {public_dns}" if public_dns else ""
+                        detail_parts.append(f"PUBLIC | IP: {public_ip}{dns_part} | Ports: {', '.join(open_ports)}")
                     elif instance_state == "running":
                         detail_parts.append("PRIVATE (no public exposure)")
 

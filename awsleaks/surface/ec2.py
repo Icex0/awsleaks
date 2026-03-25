@@ -41,7 +41,8 @@ class EC2Check(BaseCheck):
                         continue
 
                     resource = f"{instance_id} ({name_tag})" if name_tag else instance_id
-                    detail = f"EXPOSED | IP: {public_ip} | SGs: {', '.join(sg_ids)} | Ports: {', '.join(open_ports)}"
+                    dns_part = f" | DNS: {public_dns}" if public_dns else ""
+                    detail = f"EXPOSED | IP: {public_ip}{dns_part} | SGs: {', '.join(sg_ids)} | Ports: {', '.join(open_ports)}"
 
                     self.add_finding(
                         resource=resource,
