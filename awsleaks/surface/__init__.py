@@ -19,6 +19,7 @@ from awsleaks.surface.ssm_documents import SSMDocumentCheck
 from awsleaks.surface.mq import MQCheck
 from awsleaks.surface.transfer import TransferCheck
 from awsleaks.surface.route53 import Route53Check
+from awsleaks.surface.check_imdsv1_roles import IMDSv1RoleCheck
 
 GLOBAL_CHECKS = {"s3", "route53"}
 
@@ -44,4 +45,5 @@ ALL_CHECKS = {
     "mq": MQCheck,
     "transfer": TransferCheck,
     "route53": Route53Check,
+    "imdsv1-roles": IMDSv1RoleCheck,
 }

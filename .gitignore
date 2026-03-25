@@ -10,3 +10,4 @@
 /awsleaks_secrets_*
 /awsleaks_surface_*
 /nmap_output
+scripts/generate_privesc_paths.py

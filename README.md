@@ -53,6 +53,7 @@ Downloads code/configs from AWS services and scans with [BetterLeaks](https://gi
 awsleaks secrets --profile my-profile
 awsleaks secrets --profile my-profile --services lambda,glue,ecs
 awsleaks secrets --profile my-profile --all-regions
+awsleaks secrets --profile my-profile --all-regions --exclude-regions ap-southeast-1,ap-southeast-2
 awsleaks secrets --profile my-profile --regions eu-west-1,us-east-1
 awsleaks secrets --profile my-profile --max-file-size 50   # skip S3 files over 50MB (default: 200MB)
 ```
@@ -61,7 +62,7 @@ awsleaks secrets --profile my-profile --max-file-size 50   # skip S3 files over 
 
 Enumerates public-facing AWS resources and misconfigurations. Generates nmap scan files for discovered targets.
 
-**Supported checks (21):**
+**Supported checks (22):**
 
 - Security Groups (rules open to 0.0.0.0/0)
 - EC2 (public IPs with SG cross-reference for open ports)
@@ -84,13 +85,17 @@ Enumerates public-facing AWS resources and misconfigurations. Generates nmap sca
 - Amazon MQ (publicly accessible brokers with SG cross-reference for ActiveMQ, auth-only for RabbitMQ)
 - AWS Transfer Family (public SFTP/FTP/FTPS servers)
 - Route53 (DNS record collection with takeover detection via [subjack](https://github.com/haccer/subjack) — checks CNAME, NS, A, and MX takeover). You should always verify results by checking [can-take-over-xyz](https://github.com/EdOverflow/can-i-take-over-xyz)
+- IMDSv1 Roles (EC2 instances with IMDSv1 enabled, cross-referenced against IAM role permissions for privilege escalation paths using [pathfinding.cloud](https://github.com/DataDog/pathfinding.cloud) data — 66 privesc paths across solo permissions, PassRole combos, and multi-permission chains. Checks PassRole resource scope for unrestricted vs scoped access. Default: public-facing instances only)
 
 ```bash
 awsleaks surface --profile my-profile
 awsleaks surface --profile my-profile --checks ec2,security-groups,rds,s3
 awsleaks surface --profile my-profile --all-regions
+awsleaks surface --profile my-profile --all-regions --exclude-regions ap-southeast-1,ap-southeast-2
 awsleaks surface --profile my-profile --regions eu-west-1,us-east-1
 awsleaks surface --profile my-profile --subjack   # run subdomain takeover scan with subjack
+awsleaks surface --profile my-profile --checks imdsv1-roles                    # public-facing instances only
+awsleaks surface --profile my-profile --checks imdsv1-roles --include-private  # include private/stopped instances
 ```
 
 ## Permissions
@@ -132,8 +137,10 @@ awsleaks secrets --profile my-sso-profile
 | `--regions` | Specific regions, comma or space separated |
 | `--services` | (secrets) Services to scan, comma or space separated |
 | `--checks` | (surface) Checks to run, comma or space separated |
+| `--exclude-regions` | Regions to exclude, comma or space separated |
 | `--max-file-size` | (secrets) Max S3 file size in MB to download (default: 200) |
 | `--subjack` | (surface) Run subdomain takeover scan with subjack on Route53 domains |
+| `--include-private` | (surface) For imdsv1-roles: also scan private/stopped instances |
 
 ## Output
 

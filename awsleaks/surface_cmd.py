@@ -5,6 +5,7 @@ import boto3
 from awsleaks.auth import get_aws_session
 from awsleaks import output as out
 from awsleaks.surface import ALL_CHECKS, GLOBAL_CHECKS
+from awsleaks.surface.check_imdsv1_roles import IMDSv1RoleCheck
 from awsleaks.surface.route53 import Route53Check
 
 
@@ -29,9 +30,20 @@ def register(subparsers, add_auth_args):
         help="Specific regions to scan, space or comma separated (e.g. --regions eu-west-1,eu-west-2)",
     )
     parser.add_argument(
+        "--exclude-regions",
+        nargs="+",
+        default=None,
+        help="Regions to exclude, space or comma separated (e.g. --exclude-regions ap-southeast-1,ap-southeast-2)",
+    )
+    parser.add_argument(
         "--subjack",
         action="store_true",
         help="Run subdomain takeover scanning with subjack on Route53 domains",
+    )
+    parser.add_argument(
+        "--include-private",
+        action="store_true",
+        help="For imdsv1-roles check: also scan private instances (default: public-facing only)",
     )
     parser.set_defaults(func=run)
 
@@ -62,10 +74,24 @@ def _create_regional_session(base_session, region):
     )
 
 
+def _apply_exclude_regions(regions, args):
+    """Remove excluded regions from the list."""
+    if not args.exclude_regions:
+        return regions
+    excluded = set()
+    for item in args.exclude_regions:
+        excluded.update(item.split(","))
+    filtered = [r for r in regions if r not in excluded]
+    if len(filtered) < len(regions):
+        out.status(f"Excluded {len(regions) - len(filtered)} region(s): {', '.join(sorted(excluded))}")
+    return filtered
+
+
 def _parse_regions(args, session):
     """Parse region arguments into a list of regions."""
     if args.all_regions:
         regions = _get_all_regions(session)
+        regions = _apply_exclude_regions(regions, args)
         out.status(f"Scanning {len(regions)} regions")
         return regions, True
     elif args.regions:
@@ -77,6 +103,7 @@ def _parse_regions(args, session):
         if invalid:
             out.error(f"Invalid region(s): {', '.join(invalid)}")
             return None, False
+        regions = _apply_exclude_regions(regions, args)
         out.status(f"Scanning {len(regions)} region(s): {', '.join(regions)}")
         return regions, True
     else:
@@ -123,6 +150,8 @@ def run(args):
     for check_name in global_checks:
         check_cls = ALL_CHECKS[check_name]
         check = check_cls(session)
+        if isinstance(check, IMDSv1RoleCheck):
+            check.include_private = args.include_private
 
         out.header(f"{check_name} (global)")
 
@@ -152,6 +181,8 @@ def run(args):
         for check_name in regional_checks:
             check_cls = ALL_CHECKS[check_name]
             check = check_cls(regional_session)
+            if isinstance(check, IMDSv1RoleCheck):
+                check.include_private = args.include_private
 
             out.header(check_name)
 

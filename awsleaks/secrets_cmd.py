@@ -29,6 +29,12 @@ def register(subparsers, add_auth_args):
         help="Specific regions to scan, space or comma separated (e.g. --regions eu-west-1,eu-west-2)",
     )
     parser.add_argument(
+        "--exclude-regions",
+        nargs="+",
+        default=None,
+        help="Regions to exclude, space or comma separated (e.g. --exclude-regions ap-southeast-1,ap-southeast-2)",
+    )
+    parser.add_argument(
         "--max-file-size",
         type=int,
         default=200,
@@ -61,9 +67,23 @@ def _create_regional_session(base_session, region):
     )
 
 
+def _apply_exclude_regions(regions, args):
+    """Remove excluded regions from the list."""
+    if not args.exclude_regions:
+        return regions
+    excluded = set()
+    for item in args.exclude_regions:
+        excluded.update(item.split(","))
+    filtered = [r for r in regions if r not in excluded]
+    if len(filtered) < len(regions):
+        out.status(f"Excluded {len(regions) - len(filtered)} region(s): {', '.join(sorted(excluded))}")
+    return filtered
+
+
 def _parse_regions(args, session):
     if args.all_regions:
         regions = _get_all_regions(session)
+        regions = _apply_exclude_regions(regions, args)
         out.status(f"Scanning {len(regions)} regions")
         return regions, True
     elif args.regions:
@@ -75,6 +95,7 @@ def _parse_regions(args, session):
         if invalid:
             out.error(f"Invalid region(s): {', '.join(invalid)}")
             return None, False
+        regions = _apply_exclude_regions(regions, args)
         out.status(f"Scanning {len(regions)} region(s): {', '.join(regions)}")
         return regions, True
     else:
