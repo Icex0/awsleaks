@@ -109,6 +109,16 @@ def _create_collector(collector_cls, session, args):
     return collector_cls(session, run_dir=args.run_dir)
 
 
+def _collect_items(collector):
+    items = []
+    try:
+        for name, path in collector.collect():
+            items.append((name, path))
+    except Exception as e:
+        out.error(f"Error collecting {collector.service_name}: {e}")
+    return items
+
+
 def run(args):
     session = get_aws_session(args)
 
@@ -152,9 +162,7 @@ def run(args):
         collector = _create_collector(collector_cls, session, args)
         out.header(f"{service} (global)")
 
-        items = []
-        for name, path in collector.collect():
-            items.append((name, path))
+        items = _collect_items(collector)
 
         collected_by_service[service] = items
 
@@ -179,9 +187,7 @@ def run(args):
             collector = _create_collector(collector_cls, regional_session, args)
             out.header(service)
 
-            items = []
-            for name, path in collector.collect():
-                items.append((name, path))
+            items = _collect_items(collector)
 
             key = f"{service}:{region}" if multi_region else service
             collected_by_service[key] = items
